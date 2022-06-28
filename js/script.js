@@ -1,3 +1,5 @@
+console.log('Refactor branch');
+
 // Basic Info
 const form = document.querySelector(".container form");
 const nameInput = document.querySelector('#name');
@@ -9,19 +11,17 @@ const shirtColorDiv = document.querySelector('#shirt-colors');
 const shirtDesignSelect = document.querySelector('#design');
 // Activities
 const activitiesList = document.querySelector("#activities-box");
-const activitiesLegend = document.querySelector('#activities legend');
+const activities = document.querySelectorAll('#activities-box label input');
 let totalCost = 0;
 // Payments
-const paymentOptions = document.querySelectorAll("#payment option");
 const paymentSelection = document.querySelector("#payment");
-const creditCardPayment = paymentOptions[1];
+const creditCardPayment = document.querySelectorAll("#payment option")[1];
 const creditCardInfo = document.querySelector("#credit-card");
 const cardNumber = document.querySelector("#cc-num");
 const zipCode = document.querySelector("#zip");
 const cvv = document.querySelector("#cvv");
 const paypalInfo = document.querySelector("#paypal");
 const bitcoinInfo = document.querySelector("#bitcoin");
-
 
 // Default form views
 nameInput.focus();
@@ -53,11 +53,10 @@ jobRoleSelect.addEventListener('change', e => {
 // refactor to eliminate `colorThemeSelect`
 shirtDesignSelect.addEventListener('change', e => {
     const selection = e.target.value;
-    const colorThemeSelect = document.querySelector('#color');
-    const colorThemeOptions = colorThemeSelect.querySelectorAll('option');
+    const shirtColorOptions = document.querySelectorAll('#color option');
     shirtColorDiv.hidden = false;
 
-    for (let option of colorThemeOptions) {
+    for (let option of shirtColorOptions) {
         const theme = option.dataset.theme;
         option.hidden = true;
         if (selection === theme) {
@@ -103,29 +102,24 @@ paymentSelection.addEventListener('change', e => {
     }
 });
 
-// Form validation functions
-// refactor into an object 
-function nameValidator() {
-    const nameValue = nameInput.value;
-    const nameIsValid = /\s*[^\s]+\s*/.test(nameValue); // name cannot be blank
-    return nameIsValid;
-}
-
-function emailValidator() {
-    const emailValue = emailInput.value;
-    const emailIsValid = /^[^@]+@[^@.]+\.[a-z]+$/i.test(emailValue);
-    return emailIsValid;
-}
-
-function activityValidator() {
-    const activityIsValid = totalCost > 0;
-    return activityIsValid;
-}
-
-// Card validation functions
-// add other validations on separate branch
-const cardValidation = {
-    number: () => {
+// Input validation functions
+const validation = {
+    
+    name: () => {
+        const nameValue = nameInput.value;
+        const nameIsValid = /\s*[^\s]+\s*/.test(nameValue); // name cannot be blank
+        return nameIsValid;
+    }, 
+    email: () => {
+        const emailValue = emailInput.value;
+        const emailIsValid = /^[^@]+@[^@.]+\.[a-z]+$/i.test(emailValue);
+        return emailIsValid;
+    },
+    activities: () => {
+        const activityIsValid = totalCost > 0;
+        return activityIsValid;
+    },
+    cardNumber: () => {
         if (creditCardPayment.selected) {
             const numberIsValid = /^[0-9]{13,16}$/g.test(cardNumber.value);
             return numberIsValid;
@@ -133,7 +127,7 @@ const cardValidation = {
             return true;
         }
     },
-    zip: () => {
+    cardZip: () => {
         if (creditCardPayment.selected) {
             const zipCodeIsValid = /^[0-9]{5}$/g.test(zipCode.value);
             return zipCodeIsValid;
@@ -141,7 +135,7 @@ const cardValidation = {
             return true;
         }
     },
-    cvv: () => {
+    cardCVV: () => {
         if (creditCardPayment.selected) {
             const cvvIsValid = /^[0-9]{3}$/g.test(cvv.value);
             return cvvIsValid;
@@ -150,18 +144,6 @@ const cardValidation = {
         }
     }
 }
-
-// function submissionErrors(validationFunction, inputElement, event) {
-//     if (!validationFunction()) {
-//         event.preventDefault();
-//         inputElement.parentElement.classList.add('not-valid');
-//         inputElement.lastElementSibling.style.display = 'inline'; // lastElementSibling causing bug; might change back to nextElementSibling
-//     } else {
-//         inputElement.parentElement.classList.remove("not-valid");
-//         inputElement.parentElement.classList.add("valid");
-//         inputElement.lastElementSibling.style.display = 'none'; // lastElementSibling causing bug; might change back to nextElementSibling
-//     }
-// }
 
 function submissionErrors(validationFunction, inputElement, event) {
     const parentElement = inputElement.parentElement;
@@ -176,22 +158,15 @@ function submissionErrors(validationFunction, inputElement, event) {
     }
 }
 
-// Form validations
-// refactor: add to existing validation object
+// Run form validations on submit
 form.addEventListener('submit', e => {
-    console.clear();
-
-    submissionErrors(nameValidator, nameInput, e);
-    submissionErrors(emailValidator, emailInput, e);
-    submissionErrors(activityValidator, activitiesList, e);    
-    submissionErrors(cardValidation.number, cardNumber, e);
-    submissionErrors(cardValidation.zip, zipCode, e);
-    submissionErrors(cardValidation.cvv, cvv, e);
-
+    submissionErrors(validation.name, nameInput, e);
+    submissionErrors(validation.email, emailInput, e);
+    submissionErrors(validation.activities, activitiesList, e);    
+    submissionErrors(validation.cardNumber, cardNumber, e);
+    submissionErrors(validation.cardZip, zipCode, e);
+    submissionErrors(validation.cardCVV, cvv, e);
 });
-
-//// Accessibility ////
-const activities = document.querySelectorAll('#activities-box label input');
 
 // Add focus indicators to 'Register for Activities' checkboxes
 for (let activity of activities) {
