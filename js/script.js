@@ -50,7 +50,6 @@ jobRoleSelect.addEventListener('change', e => {
 });
 
 // Display shirt color options by design theme
-// refactor to eliminate `colorThemeSelect`
 shirtDesignSelect.addEventListener('change', e => {
     const selection = e.target.value;
     const shirtColorOptions = document.querySelectorAll('#color option');
@@ -81,7 +80,6 @@ activitiesList.addEventListener('change', e => {
 })
 
 // Payment information display
-// Refactor as a function; remove global variables
 paymentSelection.addEventListener('change', e => {
     const selection = e.target.value;
 
@@ -145,6 +143,7 @@ const validation = {
     }
 }
 
+// Helper function to display submission errors
 function submissionErrors(validationFunction, inputElement, event) {
     const parentElement = inputElement.parentElement;
     if (!validationFunction()) {
