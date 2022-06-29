@@ -1,10 +1,3 @@
-console.log('Branch: Exceeds-Expectations');
-
-/**
- * Refactoring
- *  check for single use variables
- */ 
-
 // Basic Info
 const form = document.querySelector(".container form");
 const nameInput = document.querySelector('#name');
@@ -12,14 +5,14 @@ const emailInput = document.querySelector("#email");
 const otherJobRole = document.querySelector("#other-job-role");
 const jobRoleSelect = document.querySelector("#title");
 // Shirts
-const shirtColorDiv = document.querySelector('#shirt-colors');
-const shirtDesignSelect = document.querySelector('#design');
+const shirtColors = document.querySelector('#shirt-colors');
+const shirtDesignDropdown = document.querySelector('#design');
 // Activities
-const activitiesList = document.querySelector("#activities-box");
+const activitiesBox = document.querySelector("#activities-box");
 const activities = document.querySelectorAll('#activities-box label input');
 let totalCost = 0;
 // Payments
-const paymentSelection = document.querySelector("#payment");
+const paymentDropdown = document.querySelector("#payment");
 const creditCardPayment = document.querySelectorAll("#payment option")[1];
 const creditCardInfo = document.querySelector("#credit-card");
 const cardNumber = document.querySelector("#cc-num");
@@ -30,19 +23,11 @@ const bitcoinInfo = document.querySelector("#bitcoin");
 
 // Default form views
 nameInput.focus();
-shirtColorDiv.hidden = true;
+shirtColors.hidden = true;
 otherJobRole.hidden = true;
 creditCardPayment.selected = true;
 paypalInfo.hidden = true;
 bitcoinInfo.hidden = true;
-
-// DEBUGGING DEFAULT SETTINGS
-// nameInput.value = 'TEST USER';
-// emailInput.value = 'TEST@EMAIL.COM';
-// // totalCost = 100;
-// cardNumber.value = '1234567890123';
-// zipCode.value = '12345';
-// cvv.value = '123';
 
 // Display 'Other Job Role' when user selects dropdown
 jobRoleSelect.addEventListener('change', e => {
@@ -55,10 +40,10 @@ jobRoleSelect.addEventListener('change', e => {
 });
 
 // Display shirt color options by design theme
-shirtDesignSelect.addEventListener('change', e => {
+shirtDesignDropdown.addEventListener('change', e => {
     const selection = e.target.value;
     const shirtColorOptions = document.querySelectorAll('#color option');
-    shirtColorDiv.hidden = false;
+    shirtColors.hidden = false;
 
     for (let option of shirtColorOptions) {
         const theme = option.dataset.theme;
@@ -70,7 +55,7 @@ shirtDesignSelect.addEventListener('change', e => {
 });
 
 // Update total activities cost
-activitiesList.addEventListener('change', e => {
+activitiesBox.addEventListener('change', e => {
     const activity = e.target;
     const activitiesTotalCost = document.querySelector('#activities-cost');
     const activityCost = parseInt(activity.dataset.cost);
@@ -85,7 +70,7 @@ activitiesList.addEventListener('change', e => {
 })
 
 // Payment information display
-paymentSelection.addEventListener('change', e => {
+paymentDropdown.addEventListener('change', e => {
     const selection = e.target.value;
 
     if (selection === 'credit-card') {
@@ -108,17 +93,17 @@ paymentSelection.addEventListener('change', e => {
 // Input validation functions
 const validation = {
     
-    name: () => {
+    nameInput: () => {
         const nameValue = nameInput.value;
         const nameIsValid = /\s*[^\s]+\s*/.test(nameValue); // name cannot be blank
         return nameIsValid;
     }, 
-    email: () => {
+    emailInput: () => {
         const emailValue = emailInput.value;
         const emailIsValid = /^[^@]+@[^@.]+\.[a-z]+$/i.test(emailValue);
         return emailIsValid;
     },
-    activities: () => {
+    activitiesBox: () => {
         const activityIsValid = totalCost > 0;
         return activityIsValid;
     },
@@ -130,7 +115,7 @@ const validation = {
             return true;
         }
     },
-    cardZip: () => {
+    zipCode: () => {
         if (creditCardPayment.selected) {
             const zipCodeIsValid = /^[0-9]{5}$/g.test(zipCode.value);
             return zipCodeIsValid;
@@ -138,7 +123,7 @@ const validation = {
             return true;
         }
     },
-    cardCVV: () => {
+    cvv: () => {
         if (creditCardPayment.selected) {
             const cvvIsValid = /^[0-9]{3}$/g.test(cvv.value);
             return cvvIsValid;
@@ -148,11 +133,19 @@ const validation = {
     }
 }
 
-// Helper function to display submission errors
 function submissionErrors(validationFunction, inputElement, event) {
     const parentElement = inputElement.parentElement;
+    let errorMessage = parentElement.lastElementChild;
     if (!validationFunction()) {
         event.preventDefault();
+
+        // Conditional error message for email field
+        if (inputElement === emailInput && emailInput.value === '') {
+            errorMessage.textContent = 'Email address field cannot be blank';
+        } else if (inputElement === emailInput && emailInput.value !== '') {
+            errorMessage.textContent = 'Email address must be formatted correctly';
+        }
+
         parentElement.classList.add('not-valid');
         parentElement.lastElementChild.style.display = 'inline'; 
     } else {
@@ -164,20 +157,37 @@ function submissionErrors(validationFunction, inputElement, event) {
 
 // Run form validations on submit
 form.addEventListener('submit', e => {
-    submissionErrors(validation.name, nameInput, e);
-    submissionErrors(validation.email, emailInput, e);
-    submissionErrors(validation.activities, activitiesList, e);    
+    submissionErrors(validation.nameInput, nameInput, e);
+    submissionErrors(validation.emailInput, emailInput, e);
+    submissionErrors(validation.activitiesBox, activitiesBox, e);    
     submissionErrors(validation.cardNumber, cardNumber, e);
-    submissionErrors(validation.cardZip, zipCode, e);
-    submissionErrors(validation.cardCVV, cvv, e);
+    submissionErrors(validation.zipCode, zipCode, e);
+    submissionErrors(validation.cvv, cvv, e);
 });
-form.addEventListener('blur', e => {
-    submissionErrors(validation.name, nameInput, e);
-    submissionErrors(validation.email, emailInput, e);
-    submissionErrors(validation.activities, activitiesList, e);    
+
+/** Refactoring blur events into helper function. Currently not working.*/
+// function addBlurEvent(inputElement) {
+//     inputElement.addEventListener('blur', e => {
+//         submissionErrors(validation.inputElement, inputElement, e);
+//     })
+// }
+nameInput.addEventListener('blur', e => {
+    submissionErrors(validation.nameInput, nameInput, e);
+});
+emailInput.addEventListener('blur', e => {
+    submissionErrors(validation.emailInput, emailInput, e);
+});
+activitiesBox.addEventListener('blur', e => {
+    submissionErrors(validation.activitiesBox, activitiesBox, e);    
+});
+cardNumber.addEventListener('blur', e => {
     submissionErrors(validation.cardNumber, cardNumber, e);
-    submissionErrors(validation.cardZip, zipCode, e);
-    submissionErrors(validation.cardCVV, cvv, e);
+});
+zipCode.addEventListener('blur', e => {
+    submissionErrors(validation.zipCode, zipCode, e);
+});
+cvv.addEventListener('blur', e => {
+    submissionErrors(validation.cvv, cvv, e);
 });
 
 // Add focus indicators to 'Register for Activities' checkboxes
@@ -192,7 +202,7 @@ activities.forEach(activity => {
 });
 
 // Prevent users from selecting conflicting activities
-activitiesList.addEventListener('change', (e) => {
+activitiesBox.addEventListener('change', (e) => {
     selection = e.target;
     const checkboxes = document.querySelectorAll('#activities-box label input');
 
@@ -212,20 +222,3 @@ activitiesList.addEventListener('change', (e) => {
         }
     })
 });
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
