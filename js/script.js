@@ -1,4 +1,9 @@
-console.log('Refactor branch');
+console.log('Branch: Exceeds-Expectations');
+
+/**
+ * Refactoring
+ *  check for single usr variables
+ */ 
 
 // Basic Info
 const form = document.querySelector(".container form");
@@ -168,15 +173,37 @@ form.addEventListener('submit', e => {
 });
 
 // Add focus indicators to 'Register for Activities' checkboxes
-for (let activity of activities) {
+activities.forEach(activity => {
     const activityLabel = activity.parentElement;
     activity.addEventListener('focus', e => {
         activityLabel.classList.add('focus');
     });
     activity.addEventListener('blur', (e) => {
-      activityLabel.classList.remove('focus');
+        activityLabel.classList.remove('focus');
     });
-}
+});
+
+// Prevent users from selecting conflicting activities
+activitiesList.addEventListener('change', (e) => {
+    selection = e.target;
+    const checkboxes = document.querySelectorAll('#activities-box label input');
+
+    // Disable conflicting activity checkboxes
+    checkboxes.forEach(checkbox => {
+        const activityTime = checkbox.dataset.dayAndTime;
+        const selectedTime = selection.dataset.dayAndTime;
+        const activityLabel = checkbox.parentElement;
+
+        if (selectedTime === activityTime && !checkbox.checked && selection.checked) {
+            checkbox.disabled = true;
+            activityLabel.classList.add('disabled');
+            
+        } else if (selectedTime === activityTime) {
+            checkbox.disabled = false;
+            activityLabel.classList.remove('disabled');
+        }
+    })
+});
 
 
 
