@@ -2,7 +2,7 @@ console.log('Branch: Exceeds-Expectations');
 
 /**
  * Refactoring
- *  check for single usr variables
+ *  check for single use variables
  */ 
 
 // Basic Info
@@ -164,6 +164,14 @@ function submissionErrors(validationFunction, inputElement, event) {
 
 // Run form validations on submit
 form.addEventListener('submit', e => {
+    submissionErrors(validation.name, nameInput, e);
+    submissionErrors(validation.email, emailInput, e);
+    submissionErrors(validation.activities, activitiesList, e);    
+    submissionErrors(validation.cardNumber, cardNumber, e);
+    submissionErrors(validation.cardZip, zipCode, e);
+    submissionErrors(validation.cardCVV, cvv, e);
+});
+form.addEventListener('blur', e => {
     submissionErrors(validation.name, nameInput, e);
     submissionErrors(validation.email, emailInput, e);
     submissionErrors(validation.activities, activitiesList, e);    
