@@ -6,7 +6,8 @@ const otherJobRole = document.querySelector("#other-job-role");
 const jobRoleSelect = document.querySelector("#title");
 // Shirts
 const shirtColors = document.querySelector('#shirt-colors');
-const shirtDesignDropdown = document.querySelector('#design');
+const shirtColorSelect = document.querySelector('#color');
+const shirtDesignSelect = document.querySelector('#design');
 // Activities
 const activitiesBox = document.querySelector("#activities-box");
 const activities = document.querySelectorAll('#activities-box label input');
@@ -23,7 +24,7 @@ const bitcoinInfo = document.querySelector("#bitcoin");
 
 // Default form views
 nameInput.focus();
-shirtColors.hidden = true;
+shirtColorSelect.disabled = true;
 otherJobRole.hidden = true;
 creditCardPayment.selected = true;
 paypalInfo.hidden = true;
@@ -40,10 +41,12 @@ jobRoleSelect.addEventListener('change', e => {
 });
 
 // Display shirt color options by design theme
-shirtDesignDropdown.addEventListener('change', e => {
+shirtDesignSelect.addEventListener('change', e => {
     const selection = e.target.value;
     const shirtColorOptions = document.querySelectorAll('#color option');
-    shirtColors.hidden = false;
+    shirtColorSelect.disabled = false;
+    shirtColorOptions[0].textContent = 'Choose a shirt color';
+    shirtColorOptions[0].selected = true;
 
     for (let option of shirtColorOptions) {
         const theme = option.dataset.theme;
@@ -138,6 +141,8 @@ function submissionErrors(validationFunction, inputElement, event) {
     let errorMessage = parentElement.lastElementChild;
     if (!validationFunction()) {
         event.preventDefault();
+        parentElement.classList.add('not-valid');
+        parentElement.lastElementChild.style.display = 'inline'; 
 
         // Conditional error message for email field
         if (inputElement === emailInput && emailInput.value === '') {
@@ -145,9 +150,7 @@ function submissionErrors(validationFunction, inputElement, event) {
         } else if (inputElement === emailInput && emailInput.value !== '') {
             errorMessage.textContent = 'Email address must be formatted correctly';
         }
-
-        parentElement.classList.add('not-valid');
-        parentElement.lastElementChild.style.display = 'inline'; 
+        
     } else {
         parentElement.classList.remove("not-valid");
         parentElement.classList.add("valid");
