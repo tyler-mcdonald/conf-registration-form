@@ -1,5 +1,5 @@
 # Interactive-Form
- Interactive form for a conference
+An interactive and accesible form for a conference.
 
 ## Features
 ### Real-time error messages
